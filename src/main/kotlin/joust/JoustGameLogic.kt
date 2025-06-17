@@ -94,25 +94,18 @@ class JoustGameLogic {
         fun findAvailableMovesInBound(possibleMoves: List<Int>) = possibleMoves.filter { it in 0 until 64 }
 
         fun findPossibleMoves(index: Int): List<Int> {
+            val possibleMoves = listOf(
+                (index - MoveByEight + MoveByTwo),
+                (index - MoveByEight - MoveByTwo),
+                (index + MoveByEight + MoveByTwo),
+                (index + MoveByEight - MoveByTwo),
+                (index - MoveBySixteen - MoveByOne),
+                (index - MoveBySixteen + MoveByOne),
+                (index + MoveBySixteen + MoveByOne),
+                (index + MoveBySixteen - MoveByOne)
+            )
 
-            // up by 1 and right + 2
-            val position1 = index - MoveByEight + MoveByTwo
-            // up by 1 and left + 2
-            val position2 = index - MoveByEight - MoveByTwo
-            // down by 1 and right + 2
-            val position3 = index + MoveByEight + MoveByTwo
-            // down by 1 and left + 2
-            val position4 = index + MoveByEight - MoveByTwo
-            // up by 2 and left + 1
-            val position5 = index - MoveBySixteen - MoveByOne
-            // up by 2 and right + 1
-            val position6 = index - MoveBySixteen + MoveByOne
-            // down by 2 and right + 1
-            val position7 = index + MoveBySixteen + MoveByOne
-            // down by 2 and left + 1
-            val position8 = index + MoveBySixteen - MoveByOne
-
-            return listOf(position1, position2, position3, position4, position5, position6, position7, position8)
+            return possibleMoves
         }
     }
 
@@ -127,7 +120,6 @@ class JoustGameLogic {
         None
     }
 
-
     fun generatePlayersInitialPosition(): List<Int> {
         val generatedList = mutableListOf<Int>()
         val player1 = generateNumber()
@@ -141,51 +133,7 @@ class JoustGameLogic {
         return generatedList
     }
 
-    interface BoardPositionGenerator { // allows for mocking
-        fun generateBoardPosition(): Int
-    }
-
-    class BoardGame : BoardPositionGenerator {
-        override fun generateBoardPosition(): Int {
-            return (0 until 64).random()
-        }
-    }
-
     private fun generateNumber(): Int {
         return (0 until 64).random()
     }
 }
-
-//            // up by 1 and right + 2
-//            val position1 = index - MoveByEight + MoveByTwo
-//            // up by 1 and left + 2
-//            val position2 = index + MoveByEight - MoveByTwo
-//            // down by 1 and right + 2
-//            val position3 = index + MoveByEight + MoveByTwo
-//            // down by 1 and left + 2
-//            val position4 = index + MoveByEight - MoveByTwo
-//            // up by 2 and left + 1
-//            val position5 = index - MoveBySixteen - MoveByOne
-//            // up by 2 and right + 1
-//            val position6 = index - MoveBySixteen - MoveByOne
-//            // down by 2 and right + 2
-//            val position7 = index + MoveBySixteen + MoveByTwo
-//            // down by 2 and left + 2
-//            val position8 = index + MoveBySixteen - MoveByTwo
-
-//    data class Positions(val positions: List<Int> = emptyList())
-
-//            val positions = Positions()
-//            positions
-//                .copy(
-//                    listOf(index - MoveByEight + MoveByTwo)
-//                            + (index - MoveByEight - MoveByTwo)
-//                            + (index + MoveByEight + MoveByTwo)
-//                            + (index + MoveByEight - MoveByTwo)
-//                            + (index - MoveBySixteen - MoveByOne)
-//                            + (index - MoveBySixteen - MoveByOne)
-//                            + (index + MoveBySixteen + MoveByTwo)
-//                            + (index + MoveBySixteen - MoveByTwo)
-//                )
-
-

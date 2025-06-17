@@ -11,25 +11,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class JoustGameLogicTest {
-    val boardGame: JoustGameLogic.BoardGame = mock()
-
     @BeforeEach
     fun setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    fun `generateBoardPosition, return position 10 `() {
-        `when`(boardGame.generateBoardPosition()).thenReturn(10)
-
-        assertEquals(10, boardGame.generateBoardPosition())
-
-    }
-
-    @Test
-    fun `generateBoardPosition, return position 30 `() {
-        `when`(boardGame.generateBoardPosition()).thenReturn(30)
-        assertEquals(30, boardGame.generateBoardPosition())
     }
 
     @Test
