@@ -14,16 +14,26 @@ class JoustGameLogic {
         Player2,
     }
 
+    enum class PlayerTurn {
+        Player1,
+        Player2,
+    }
+
+    enum class GameState {
+        Player1Wins,
+        Player2Wins,
+        None
+    }
+
     class Board(
         player1Position: Int,
         player2Position: Int,
-    ) {
+    ) : BoardInterface {
         var playerTurn = PlayerTurn.Player1
         val cells: MutableList<Cell> =
             MutableList(64) { if (it == player1Position) Cell.Player1 else if (it == player2Position) Cell.Player2 else Cell.Available }
 
-
-        fun makeAMove(playerInput: Int) {
+        fun makeAMove(cells: List<Cell>, playerInput: Int) {
             val currentPlayerPosition = cells.indexOfFirst { it == mapToCurrentPlayerTurn(playerTurn) }
             val findAvailablePositionForPlayer = findAvailableMovesForPlayer(currentPlayerPosition, cells)
 
@@ -35,7 +45,7 @@ class JoustGameLogic {
             }
         }
 
-        fun mapToCurrentPlayerTurn(playerTurn: PlayerTurn): Cell =
+        override fun mapToCurrentPlayerTurn(playerTurn: PlayerTurn): Cell =
             if (playerTurn == PlayerTurn.Player1) Cell.Player1 else Cell.Player2
 
         fun alternatePlayers(player: PlayerTurn) {
@@ -46,26 +56,26 @@ class JoustGameLogic {
             }
         }
 
-        fun updateBoardState(playedPosition: Int): List<Cell> {
+        override fun updateBoardState(playerPosition: Int): List<Cell> {
             cells.forEachIndexed { index, cell ->
                 if (playerTurn == PlayerTurn.Player1) {
                     if (cells[index] == Cell.Player1) {
                         cells[index] = Cell.Unavailable
-                        cells[playedPosition] = Cell.Player1
+                        cells[playerPosition] = Cell.Player1
                     }
                 }
 
                 if (playerTurn == PlayerTurn.Player2) {
                     if (cells[index] == Cell.Player2) {
                         cells[index] = Cell.Unavailable
-                        cells[playedPosition] = Cell.Player2
+                        cells[playerPosition] = Cell.Player2
                     }
                 }
             }
             return cells
         }
 
-        fun getGameState(cells: List<Cell>): GameState {
+        override fun getGameState(cells: List<Cell>): GameState {
             val player1Position = cells.indexOfFirst { it == Cell.Player1 }
             val player2Position = cells.indexOfFirst { it == Cell.Player2 }
 
@@ -88,12 +98,12 @@ class JoustGameLogic {
             return filterByAvailableCells
         }
 
-        fun filterByAvailableCells(playerMoves: List<Int>, cells: List<Cell>) =
+        override fun filterByAvailableCells(playerMoves: List<Int>, cells: List<Cell>) =
             playerMoves.filter { it -> cells[it] == Cell.Available }
 
-        fun findAvailableMovesInBound(possibleMoves: List<Int>) = possibleMoves.filter { it in 0 until 64 }
+        override fun findAvailableMovesInBound(possibleMoves: List<Int>) = possibleMoves.filter { it in 0 until 64 }
 
-        fun findPossibleMoves(index: Int): List<Int> {
+        override fun findPossibleMoves(index: Int): List<Int> {
             val possibleMoves = listOf(
                 (index - MoveByEight + MoveByTwo),
                 (index - MoveByEight - MoveByTwo),
@@ -109,18 +119,7 @@ class JoustGameLogic {
         }
     }
 
-    enum class PlayerTurn {
-        Player1,
-        Player2,
-    }
-
-    enum class GameState {
-        Player1Wins,
-        Player2Wins,
-        None
-    }
-
-    fun generatePlayersInitialPosition(): List<Int> {
+    fun generatePlayersInitialPositions(): List<Int> {
         val generatedList = mutableListOf<Int>()
         val player1 = generateNumber()
         var player2 = generateNumber()

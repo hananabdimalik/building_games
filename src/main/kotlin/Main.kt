@@ -6,7 +6,7 @@ import org.example.joust.JoustGameLogic.*
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun playJoust() {
-    val initialState = JoustGameLogic().generatePlayersInitialPosition()
+    val initialState = JoustGameLogic().generatePlayersInitialPositions()
     val joustGameLogic = Board(initialState.first(), initialState.last())
 
     println(gameBoard(joustGameLogic.cells))
@@ -17,7 +17,7 @@ fun playJoust() {
     while (joustGameLogic.getGameState(joustGameLogic.cells) == GameState.None) {
         val inputPosition = readln().trim().toInt() // add try/catch to handle bad input
 
-        joustGameLogic.makeAMove(inputPosition)
+        joustGameLogic.makeAMove(joustGameLogic.cells, inputPosition)
 
         println(gameBoard(joustGameLogic.cells))
         println("${joustGameLogic.playerTurn} moves")

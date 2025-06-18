@@ -1,105 +1,87 @@
 package joust
 
 import org.example.joust.JoustGameLogic
+import org.example.joust.JoustGameLogic.Board
 import org.example.joust.JoustGameLogic.Cell
-import org.example.joust.JoustGameLogic.PlayerTurn
-import org.junit.jupiter.api.BeforeEach
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
+import org.example.joust.JoustGameLogic.PlayerTurn.Player1
+import org.example.joust.JoustGameLogic.PlayerTurn.Player2
+import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class JoustGameLogicTest {
-    @BeforeEach
-    fun setUp() {
-        MockitoAnnotations.openMocks(this);
+    val board = Board(10, 20)
+
+    @Test
+    fun `generatePlayersInitialPositions, assert generated nums are different`() {
+        val joustGameLogic = JoustGameLogic()
+        val generatedList = joustGameLogic.generatePlayersInitialPositions()
+        val diffNums = generatedList.first() != generatedList.last()
+        assertTrue(diffNums)
     }
 
     @Test
-    fun `alternatePlayers, if no available positions left for player1, return gameState`() {
-        val gameBoard: MutableList<Cell> =
-            MutableList(64) { if (it == 10) Cell.Player1 else if (it == 30) Cell.Player2 else Cell.Unavailable }
-        val board = JoustGameLogic.Board(10, 30)
-
-        val actual = board.getGameState(gameBoard)
-        assertEquals(JoustGameLogic.GameState.Player2Wins, actual)
-    }
-
-    @Test
-    fun `getGameState, if list is empty, gameState is Player2Won`() {
-        val gameBoard: MutableList<Cell> =
-            MutableList(64) { if (it == 10) Cell.Player1 else if (it == 30) Cell.Player2 else Cell.Unavailable }
-        val board = JoustGameLogic.Board(10, 30)
-        board.findAvailableMovesForPlayer(10, gameBoard)
-        val actual = board.getGameState(gameBoard)
-
-        assertEquals(PlayerTurn.Player1, board.playerTurn)
-        assertEquals(JoustGameLogic.GameState.Player2Wins, actual)
-    }
-
-    @Test
-    fun `findPossibleMoves, returns a list of possibleMoves`() {
-        val board = JoustGameLogic.Board(10, 30)
-        val actual = board.findPossibleMoves(10)
-
-        assertEquals(listOf(4, 0, 20, 16, -7, -5, 27, 25), actual)
-
-    }
-
-    @Test
-    fun `findAvailableMovesInBound, returns a list of possibleMoves`() {
-        val board = JoustGameLogic.Board(10, 30)
-
+    fun `findPossibleMoves, return a list of possible moves`() {
         val possibleMoves = board.findPossibleMoves(10)
-        val actual = board.findAvailableMovesInBound(possibleMoves)
-        assertEquals(listOf(4, 0, 20, 16, 27, 25), actual)
+        assertEquals(listOf(4, 0, 20, 16, -7, -5, 27, 25), possibleMoves)
     }
 
     @Test
-    fun `filterByAvailableCells, return a list of availableCells`() {
-        val gameBoard = MutableList(64) {
-            if (it == 25) Cell.Unavailable else if (it == 4) Cell.Unavailable else if (it == 16) Cell.Unavailable else Cell.Available
-        }
-        val board = JoustGameLogic.Board(10, 30)
-
-        val possibleMoves = board.findPossibleMoves(10)
-        val availableMovesInBound = board.findAvailableMovesInBound(possibleMoves)
-        val actual = board.filterByAvailableCells(availableMovesInBound, gameBoard)
-
-        assertEquals(listOf(0, 20, 27), actual)
+    fun `findAvailableMovesInBound, returns list of available moves`() {
+        val list = listOf(4, 0, 20, 16, -7, -5, 27, 25)
+        val movesInBound = board.findAvailableMovesInBound(list)
+        assertEquals(listOf(4, 0, 20, 16, 27, 25), movesInBound)
     }
 
     @Test
-    fun `findAvailableMovesForPlayer, returns a list of availableMoves`() {
-        val gameBoard = MutableList(64) {
-            if (it == 25) Cell.Unavailable else if (it == 16) Cell.Unavailable else Cell.Available
-        }
-        val board = JoustGameLogic.Board(10, 30)
-        val actual = board.findAvailableMovesForPlayer(10, gameBoard)
+    fun `filterByAvailableCells, return a list of available cells`() {
+        val cells = MutableList(64) { if (it == 4 || it == 0) Cell.Unavailable else Cell.Available }
+        val availableMoves = board.filterByAvailableCells(listOf(4, 0, 20, 16), cells)
 
-        assertEquals(listOf(4, 0, 20, 27), actual)
+        assertEquals(listOf(20, 16), availableMoves)
     }
 
     @Test
-    fun `getGameState, if player 1 has no more moves`() {
-        val gameBoard = MutableList(64) {
-            if (it == 25) Cell.Unavailable else if (it == 10) Cell.Player1 else if (it == 30) Cell.Player2 else if (it == 16 || it == 4 || it == 0 || it == 20 || it == 27) Cell.Unavailable else Cell.Available
-        }
-        val board = JoustGameLogic.Board(10, 30)
-        val actual = board.getGameState(gameBoard)
+    fun `findAvailableMovesForPlayer, given player position, return list of available moves`() {
+        val cells = MutableList(64) { if (it == 4 || it == 0) Cell.Unavailable else Cell.Available }
 
-        assertEquals(JoustGameLogic.GameState.Player2Wins, actual)
+        val availableMovesForPlayer = board.findAvailableMovesForPlayer(10, cells = cells)
+        assertEquals(listOf(20, 16, 27, 25), availableMovesForPlayer)
     }
 
     @Test
-    fun `getGameState, if player 2 has no more moves`() {
-        val gameBoard = MutableList(64) {
-            if (it == 25) Cell.Unavailable else if (it == 10) Cell.Player1 else if (it == 30) Cell.Player2 else if (it == 16 || it == 4 || it == 0 || it == 20 || it == 27) Cell.Unavailable else Cell.Available
-        }
-        val board = JoustGameLogic.Board(10, 30)
-        val actual = board.getGameState(gameBoard)
+    fun `getGameState, if player1 has no available cells, player2 wins`() {
+        val cells =
+            MutableList(64) {
+                when (it) {
+                    4, 0, 20, 16, 27, 25 -> Cell.Unavailable
+                    10 -> Cell.Player1
+                    30 -> Cell.Player2
+                    else -> Cell.Available
+                }
+            }
+        assertEquals(JoustGameLogic.GameState.Player2Wins, board.getGameState(cells = cells))
+    }
 
-        assertEquals(JoustGameLogic.GameState.Player2Wins, actual)
+//    @Test
+//    fun `updateBoardState, when player 1 moves to position 25, previous player1 position in Unavailable`() {
+//        val cells =
+//            MutableList(64) {
+//                when (it) {
+//                    10 -> Cell.Player1
+//                    30 -> Cell.Player2
+//                    else -> Cell.Available
+//                }
+//            }
+//
+//        board.makeAMove(cells, 25)
+//        assertEquals(cells[10], Cell.Unavailable)
+//        assertEquals(cells[25], Cell.Player1)
+//    }
+
+    @Test
+    fun `alternatePlayers, when playerTurn is Player 1, playerTurn is updated to Player 2`() {
+        board.alternatePlayers(Player1)
+        assertEquals(Player2, board.playerTurn)
     }
 }
