@@ -48,6 +48,10 @@ class JoustGameLogic {
         override fun mapToCurrentPlayerTurn(playerTurn: PlayerTurn): Cell =
             if (playerTurn == PlayerTurn.Player1) Cell.Player1 else Cell.Player2
 
+        override fun mapCoordinateToIndex(cell: Pair<Int, Int>): Int {
+            return (cell.first * 8) + cell.second
+        }
+
         fun alternatePlayers(player: PlayerTurn) {
             playerTurn = if (player == PlayerTurn.Player1) {
                 PlayerTurn.Player2
@@ -91,9 +95,13 @@ class JoustGameLogic {
         }
 
         fun findAvailableMovesForPlayer(playerPosition: Int, cells: List<Cell>): List<Int> {
-            val listOfMoves = findPossibleMoves(playerPosition)
+            val mapPositionToCoordinate = mapCellPositionToCoordinate(playerPosition)
+            val listOfMoves = findPossibleMoves(mapPositionToCoordinate)
             val movesWithinBound = findAvailableMovesInBound(listOfMoves)
-            val filterByAvailableCells = filterByAvailableCells(movesWithinBound, cells)
+            val mapMovesInBoundToCoordinates = movesWithinBound.map {
+                mapCoordinateToIndex(it)
+            }
+            val filterByAvailableCells = filterByAvailableCells(mapMovesInBoundToCoordinates, cells)
 
             return filterByAvailableCells
         }
@@ -101,21 +109,29 @@ class JoustGameLogic {
         override fun filterByAvailableCells(playerMoves: List<Int>, cells: List<Cell>) =
             playerMoves.filter { it -> cells[it] == Cell.Available }
 
-        override fun findAvailableMovesInBound(possibleMoves: List<Int>) = possibleMoves.filter { it in 0 until 64 }
+        override fun findPossibleMoves(cell: Pair<Int, Int>): List<Pair<Int, Int>> {
+            return listOf(
+                Pair(cell.first - 1, cell.second + 2),
+                Pair(cell.first + 1, cell.second + 2),
+                Pair(cell.first - 1, cell.second - 2),
+                Pair(cell.first + 1, cell.second - 2),
 
-        override fun findPossibleMoves(index: Int): List<Int> {
-            val possibleMoves = listOf(
-                (index - MoveByEight + MoveByTwo),
-                (index - MoveByEight - MoveByTwo),
-                (index + MoveByEight + MoveByTwo),
-                (index + MoveByEight - MoveByTwo),
-                (index - MoveBySixteen - MoveByOne),
-                (index - MoveBySixteen + MoveByOne),
-                (index + MoveBySixteen + MoveByOne),
-                (index + MoveBySixteen - MoveByOne)
+                Pair(cell.first - 2, cell.second - 1),
+                Pair(cell.first - 2, cell.second + 1),
+                Pair(cell.first + 2, cell.second - 1),
+                Pair(cell.first + 2, cell.second + 1),
             )
+        }
 
-            return possibleMoves
+        override fun findAvailableMovesInBound(possibleMoves: List<Pair<Int, Int>>): List<Pair<Int, Int>> {
+            return possibleMoves.filter { it.first in 0 until 8 && it.second in 0 until  8 }
+        }
+
+
+        override fun mapCellPositionToCoordinate(cell: Int): Pair<Int, Int> {
+            val column = cell % 8
+            val row = cell / 8
+            return row to column
         }
     }
 

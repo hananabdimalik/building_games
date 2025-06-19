@@ -22,15 +22,23 @@ class JoustGameLogicTest {
 
     @Test
     fun `findPossibleMoves, return a list of possible moves`() {
-        val possibleMoves = board.findPossibleMoves(10)
-        assertEquals(listOf(4, 0, 20, 16, -7, -5, 27, 25), possibleMoves)
+        val possibleMoves = board.findPossibleMoves(6 to 2)
+        assertEquals(listOf(5 to 4, 7 to 4, 5 to 0, 7 to 0, 4 to 1, 4 to 3, 8 to 1, 8 to 3), possibleMoves)
     }
 
     @Test
-    fun `findAvailableMovesInBound, returns list of available moves`() {
-        val list = listOf(4, 0, 20, 16, -7, -5, 27, 25)
-        val movesInBound = board.findAvailableMovesInBound(list)
-        assertEquals(listOf(4, 0, 20, 16, 27, 25), movesInBound)
+    fun `mapCellToCoordinate, given cell position 30, return the right coordinate in 8X8 grid`() {
+        assertEquals(3 to 6, board.mapCellPositionToCoordinate(30))
+    }
+
+    @Test
+    fun `mapCellToCoordinate, given cell position 63, return the right coordinate in 8X8 grid`() {
+        assertEquals(7 to 7, board.mapCellPositionToCoordinate(63))
+    }
+
+    @Test
+    fun `mapCellToCoordinate, given cell position 50, return the right coordinate in 8X8 grid`() {
+        assertEquals(6 to 2, board.mapCellPositionToCoordinate(50))
     }
 
     @Test
@@ -42,11 +50,23 @@ class JoustGameLogicTest {
     }
 
     @Test
+    fun `findAvailableMovesInBound, return list of available moves within bound`() {
+        val availableMovesInBound =
+            board.findAvailableMovesInBound(listOf(5 to 4, 7 to 4, 5 to 0, 7 to 0, 4 to 1, 4 to 3, 8 to 1, 8 to 3))
+        assertEquals(listOf(5 to 4, 7 to 4, 5 to 0, 7 to 0, 4 to 1, 4 to 3), availableMovesInBound)
+
+    }
+
+    @Test
+    fun `mapCoordinateToIndex, given cell coordinate (7,4), return the cell position`() {
+        assertEquals(60, board.mapCoordinateToIndex(7 to 4))
+    }
+    @Test
     fun `findAvailableMovesForPlayer, given player position, return list of available moves`() {
         val cells = MutableList(64) { if (it == 4 || it == 0) Cell.Unavailable else Cell.Available }
 
         val availableMovesForPlayer = board.findAvailableMovesForPlayer(10, cells = cells)
-        assertEquals(listOf(20, 16, 27, 25), availableMovesForPlayer)
+        assertEquals(listOf(20, 16, 25, 27), availableMovesForPlayer)
     }
 
     @Test

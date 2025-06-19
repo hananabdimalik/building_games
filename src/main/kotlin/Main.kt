@@ -37,7 +37,7 @@ private fun gameBoard(cells: List<Cell>): String {
     var board = " "
     for (i in 0 until cells.size) {
         val cellValue =
-            if (cells[i] == Cell.Player1) "K1" else if (cells[i] == Cell.Player2) "K2 " else if (cells[i] == Cell.Unavailable) "UA" else "A"
+            if (cells[i] == Cell.Player1) "K1" else if (cells[i] == Cell.Player2) "K2 " else if (cells[i] == Cell.Unavailable) "UA" else "$i A"
         board += "  $cellValue  |"
 
         if ((i + 1) % 8 == 0) {
