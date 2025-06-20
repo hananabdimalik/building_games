@@ -51,3 +51,7 @@ private fun gameBoard(cells: List<Cell>): String {
 fun main() {
     println(playJoust())
 }
+
+
+// strategy -> if both players are starting from same colour tile -> go second and follow the first player
+           //-> Else start first

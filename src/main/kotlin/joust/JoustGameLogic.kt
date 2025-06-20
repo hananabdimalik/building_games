@@ -33,12 +33,12 @@ class JoustGameLogic {
         val cells: MutableList<Cell> =
             MutableList(64) { if (it == player1Position) Cell.Player1 else if (it == player2Position) Cell.Player2 else Cell.Available }
 
-        fun makeAMove(cells: List<Cell>, playerInput: Int) {
+        fun makeAMove(cells: MutableList<Cell>, playerInput: Int) {
             val currentPlayerPosition = cells.indexOfFirst { it == mapToCurrentPlayerTurn(playerTurn) }
             val findAvailablePositionForPlayer = findAvailableMovesForPlayer(currentPlayerPosition, cells)
 
             if (findAvailablePositionForPlayer.isNotEmpty() && findAvailablePositionForPlayer.contains(playerInput)) {
-                updateBoardState(playerInput)
+                updateBoardState(cells, playerInput)
                 alternatePlayers(playerTurn)
             } else {
                 getGameState(cells)
@@ -48,10 +48,6 @@ class JoustGameLogic {
         override fun mapToCurrentPlayerTurn(playerTurn: PlayerTurn): Cell =
             if (playerTurn == PlayerTurn.Player1) Cell.Player1 else Cell.Player2
 
-        override fun mapCoordinateToIndex(cell: Pair<Int, Int>): Int {
-            return (cell.first * 8) + cell.second
-        }
-
         fun alternatePlayers(player: PlayerTurn) {
             playerTurn = if (player == PlayerTurn.Player1) {
                 PlayerTurn.Player2
@@ -60,7 +56,7 @@ class JoustGameLogic {
             }
         }
 
-        override fun updateBoardState(playerPosition: Int): List<Cell> {
+        override fun updateBoardState(cells: MutableList<Cell>, playerPosition: Int): List<Cell> {
             cells.forEachIndexed { index, cell ->
                 if (playerTurn == PlayerTurn.Player1) {
                     if (cells[index] == Cell.Player1) {
@@ -104,6 +100,10 @@ class JoustGameLogic {
             val filterByAvailableCells = filterByAvailableCells(mapMovesInBoundToCoordinates, cells)
 
             return filterByAvailableCells
+        }
+
+        override fun mapCoordinateToIndex(cell: Pair<Int, Int>): Int {
+            return (cell.first * 8) + cell.second
         }
 
         override fun filterByAvailableCells(playerMoves: List<Int>, cells: List<Cell>) =

@@ -83,21 +83,38 @@ class JoustGameLogicTest {
         assertEquals(JoustGameLogic.GameState.Player2Wins, board.getGameState(cells = cells))
     }
 
-//    @Test
-//    fun `updateBoardState, when player 1 moves to position 25, previous player1 position in Unavailable`() {
-//        val cells =
-//            MutableList(64) {
-//                when (it) {
-//                    10 -> Cell.Player1
-//                    30 -> Cell.Player2
-//                    else -> Cell.Available
-//                }
-//            }
-//
-//        board.makeAMove(cells, 25)
-//        assertEquals(cells[10], Cell.Unavailable)
-//        assertEquals(cells[25], Cell.Player1)
-//    }
+    @Test
+    fun `updateBoardState, when player 1 moves to position 25, previous player1 position in Unavailable`() {
+        val cells =
+            MutableList(64) {
+                when (it) {
+                    10 -> Cell.Player1
+                    30 -> Cell.Player2
+                    else -> Cell.Available
+                }
+            }
+
+        val updatedBoard = board.updateBoardState(cells = cells, 25)
+        assertEquals(updatedBoard[10], Cell.Unavailable)
+        assertEquals(updatedBoard[25], Cell.Player1)
+    }
+
+
+    @Test
+    fun `updateBoardState, when player 2 moves to position 20, previous player1 position in Unavailable`() {
+        val cells =
+            MutableList(64) {
+                when (it) {
+                    10 -> Cell.Player1
+                    30 -> Cell.Player2
+                    else -> Cell.Available
+                }
+            }
+        board.alternatePlayers(Player1)
+        board.updateBoardState(cells = cells, 20)
+        assertEquals(cells[30], Cell.Unavailable)
+        assertEquals(cells[20], Cell.Player2)
+    }
 
     @Test
     fun `alternatePlayers, when playerTurn is Player 1, playerTurn is updated to Player 2`() {

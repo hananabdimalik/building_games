@@ -9,7 +9,7 @@ interface BoardInterface {
     fun filterByAvailableCells(playerMoves: List<Int>, cells: List<Cell>): List<Int>
     fun findPossibleMoves(cell: Pair<Int, Int>): List<Pair<Int, Int>>
     fun findAvailableMovesInBound(possibleMoves: List<Pair<Int, Int>>): List<Pair<Int, Int>>
-    fun updateBoardState( playerPosition: Int): List<Cell>
+    fun updateBoardState(cells: MutableList<Cell>, playerPosition: Int): List<Cell>
     fun mapToCurrentPlayerTurn(playerTurn: JoustGameLogic.PlayerTurn): Cell
     fun mapCoordinateToIndex(cell: Pair<Int, Int>): Int
 }
